@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
 export default defineConfig({
+  base: '/amazon-auto_goods_adjustment_inproved/',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
