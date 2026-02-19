@@ -82,7 +82,11 @@ function App() {
       setResult(null)
 
       try {
-        // 大きなファイルでもUIをブロックしないよう、非同期化
+        // ローディング表示を描画させてから処理を開始する
+        await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
+
+        const minDelay = new Promise((r) => setTimeout(r, 1000))
+
         const processResult = await new Promise<ProcessResult>((resolve, reject) => {
           setTimeout(() => {
             try {
@@ -92,6 +96,9 @@ function App() {
             }
           }, 0)
         })
+
+        // 最低1秒はローディングを表示する
+        await minDelay
 
         setResult(processResult)
         setFileName(name)
@@ -154,7 +161,7 @@ function App() {
       <div className="container mx-auto px-4 py-8 max-w-4xl space-y-6">
 
         {/* ファイルアップロード */}
-        <FileUploader onFileSelect={handleFileSelect} disabled={processing} />
+        <FileUploader onFileSelect={handleFileSelect} disabled={processing} processing={processing} />
 
         {/* ルール編集 */}
         <RuleEditor params={params} onChange={handleParamsChange} errors={errors} />
@@ -175,22 +182,6 @@ function App() {
               '変更したルールで再処理'
             )}
           </Button>
-        )}
-
-        {/* 処理中スピナー */}
-        {processing && (
-          <Card className="border-indigo-200 bg-gradient-to-br from-indigo-50 to-blue-50 shadow-md">
-            <CardContent className="flex flex-col items-center justify-center gap-4 py-12">
-              <div className="relative">
-                <div className="h-16 w-16 rounded-full border-4 border-indigo-100" />
-                <div className="absolute inset-0 h-16 w-16 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin" />
-              </div>
-              <div className="text-center space-y-1">
-                <p className="text-base font-medium text-indigo-700">ファイルを処理しています...</p>
-                <p className="text-sm text-indigo-500/70">入札額の調整ルールを適用中です。しばらくお待ちください。</p>
-              </div>
-            </CardContent>
-          </Card>
         )}
 
         {/* エラー表示 */}
