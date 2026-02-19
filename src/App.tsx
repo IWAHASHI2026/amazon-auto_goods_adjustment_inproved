@@ -140,15 +140,18 @@ function App() {
   const hasValidationErrors = Object.keys(errors).length > 0
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-4xl space-y-6">
-        {/* ヘッダー */}
-        <div>
-          <h1 className="text-2xl font-bold">Amazon 広告 入札調整ツール</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+    <div className="min-h-screen">
+      {/* ヘッダーバナー */}
+      <div className="bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 px-4 py-8 shadow-lg">
+        <div className="container mx-auto max-w-4xl">
+          <h1 className="text-2xl font-bold text-white">Amazon 広告 入札調整ツール</h1>
+          <p className="text-sm text-white/70 mt-1">
             スポンサープロダクト広告のBulkファイル（.xlsx）をアップロードし、ルールに基づいて入札額を自動調整します。
           </p>
         </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8 max-w-4xl space-y-6">
 
         {/* ファイルアップロード */}
         <FileUploader onFileSelect={handleFileSelect} disabled={processing} />
@@ -161,7 +164,7 @@ function App() {
           <Button
             onClick={handleReprocess}
             disabled={processing || hasValidationErrors}
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto bg-lime-500 text-white hover:bg-lime-600"
           >
             {processing ? (
               <>
@@ -176,10 +179,10 @@ function App() {
 
         {/* 処理中スピナー */}
         {processing && (
-          <Card>
+          <Card className="border-indigo-100 shadow-md">
             <CardContent className="flex items-center justify-center gap-3 py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
-              <p className="text-sm text-muted-foreground">ファイルを処理しています...</p>
+              <Loader2 className="h-6 w-6 animate-spin text-indigo-500" />
+              <p className="text-sm text-indigo-600/70">ファイルを処理しています...</p>
             </CardContent>
           </Card>
         )}
@@ -195,25 +198,25 @@ function App() {
 
         {/* 処理結果 */}
         {result && !processing && (
-          <Card className="border-green-200 bg-green-50">
+          <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 shadow-md">
             <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2 text-green-800">
-                <CheckCircle2 className="h-5 w-5" />
+              <CardTitle className="text-lg flex items-center gap-2 text-emerald-700">
+                <CheckCircle2 className="h-5 w-5 text-emerald-500" />
                 処理完了
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-muted-foreground">元の行数（ヘッダー除く）</p>
-                  <p className="font-medium text-lg">{result.totalRows.toLocaleString()}</p>
+                  <p className="text-emerald-600/70">元の行数（ヘッダー除く）</p>
+                  <p className="font-medium text-lg text-emerald-900">{result.totalRows.toLocaleString()}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">処理対象行数（商品ターゲティング）</p>
-                  <p className="font-medium text-lg">{result.processedRows.toLocaleString()}</p>
+                  <p className="text-emerald-600/70">処理対象行数（商品ターゲティング）</p>
+                  <p className="font-medium text-lg text-emerald-900">{result.processedRows.toLocaleString()}</p>
                 </div>
               </div>
-              <Button onClick={handleDownload} size="lg" className="w-full sm:w-auto">
+              <Button onClick={handleDownload} size="lg" className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white">
                 <Download />
                 調整済みファイルをダウンロード
               </Button>

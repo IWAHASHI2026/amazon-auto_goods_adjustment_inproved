@@ -47,9 +47,10 @@ export function FileUploader({ onFileSelect, disabled }: FileUploaderProps) {
   return (
     <Card
       className={cn(
-        'border-2 border-dashed transition-colors cursor-pointer',
-        isDragging && 'border-primary bg-primary/5',
-        disabled && 'opacity-50 cursor-not-allowed',
+        'border-2 border-dashed transition-all duration-200 cursor-pointer hover:bg-indigo-50/40 hover:border-indigo-300',
+        isDragging && 'border-indigo-500 bg-indigo-50/60 shadow-md',
+        !isDragging && 'border-indigo-200',
+        disabled && 'opacity-50 cursor-not-allowed hover:bg-transparent hover:border-indigo-200',
       )}
       onDragOver={(e) => {
         e.preventDefault()
@@ -60,7 +61,7 @@ export function FileUploader({ onFileSelect, disabled }: FileUploaderProps) {
       onClick={() => !disabled && inputRef.current?.click()}
     >
       <CardContent className="flex flex-col items-center justify-center py-10 gap-3">
-        <Upload className="h-10 w-10 text-muted-foreground" />
+        <Upload className="h-10 w-10 text-indigo-400" />
         <div className="text-center">
           <p className="text-sm font-medium">
             .xlsx ファイルをドロップ、またはクリックして選択
