@@ -4,12 +4,34 @@ Amazon スポンサープロダクト広告の Bulk ファイル（.xlsx）を�
 
 ## セットアップ
 
+### 前提条件
+
+- **Node.js** 18 以上（推奨: 20 LTS）
+- **npm** 9 以上
+
+### 手順
+
 ```bash
+# リポジトリをクローン（まだの場合）
+git clone <リポジトリURL>
+cd auto_goods_adjustment_inproved
+
+# 依存関係をインストール
 npm install
+
+# 開発サーバーを起動
 npm run dev
 ```
 
 ブラウザで `http://localhost:5173` を開きます。
+
+### nvm を使う場合
+
+```bash
+nvm use   # .nvmrc に合わせて Node バージョン切り替え
+npm install
+npm run dev
+```
 
 ## 使い方
 

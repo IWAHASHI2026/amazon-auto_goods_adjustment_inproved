@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { Download, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { Download, Loader2, AlertCircle, CheckCircle2, TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { type AdjustmentParams, DEFAULT_PARAMS } from '@/lib/types'
 import { processExcel, type ProcessResult } from '@/lib/excel-processor'
 import { FileUploader } from '@/components/FileUploader'
@@ -179,10 +179,16 @@ function App() {
 
         {/* 処理中スピナー */}
         {processing && (
-          <Card className="border-indigo-100 shadow-md">
-            <CardContent className="flex items-center justify-center gap-3 py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-indigo-500" />
-              <p className="text-sm text-indigo-600/70">ファイルを処理しています...</p>
+          <Card className="border-indigo-200 bg-gradient-to-br from-indigo-50 to-blue-50 shadow-md">
+            <CardContent className="flex flex-col items-center justify-center gap-4 py-12">
+              <div className="relative">
+                <div className="h-16 w-16 rounded-full border-4 border-indigo-100" />
+                <div className="absolute inset-0 h-16 w-16 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin" />
+              </div>
+              <div className="text-center space-y-1">
+                <p className="text-base font-medium text-indigo-700">ファイルを処理しています...</p>
+                <p className="text-sm text-indigo-500/70">入札額の調整ルールを適用中です。しばらくお待ちください。</p>
+              </div>
             </CardContent>
           </Card>
         )}
@@ -205,7 +211,8 @@ function App() {
                 処理完了
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-5">
+              {/* 基本情報 */}
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <p className="text-emerald-600/70">元の行数（ヘッダー除く）</p>
@@ -216,6 +223,47 @@ function App() {
                   <p className="font-medium text-lg text-emerald-900">{result.processedRows.toLocaleString()}</p>
                 </div>
               </div>
+
+              {/* デルタ値ごとの内訳 */}
+              <div>
+                <p className="text-sm font-medium text-emerald-700 mb-2">入札調整の内訳</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {Object.entries(result.deltaCounts)
+                    .sort(([a], [b]) => parseFloat(b) - parseFloat(a))
+                    .map(([delta, count]) => {
+                      const numDelta = parseFloat(delta)
+                      const isPositive = numDelta > 0
+                      const isZero = numDelta === 0
+                      return (
+                        <div
+                          key={delta}
+                          className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm ${
+                            isPositive
+                              ? 'bg-blue-50 border border-blue-200'
+                              : isZero
+                                ? 'bg-gray-50 border border-gray-200'
+                                : 'bg-red-50 border border-red-200'
+                          }`}
+                        >
+                          {isPositive ? (
+                            <TrendingUp className="h-4 w-4 text-blue-500 shrink-0" />
+                          ) : isZero ? (
+                            <Minus className="h-4 w-4 text-gray-400 shrink-0" />
+                          ) : (
+                            <TrendingDown className="h-4 w-4 text-red-500 shrink-0" />
+                          )}
+                          <span className={`font-mono font-medium ${
+                            isPositive ? 'text-blue-700' : isZero ? 'text-gray-600' : 'text-red-700'
+                          }`}>
+                            {delta}
+                          </span>
+                          <span className="text-gray-500 ml-auto">{count.toLocaleString()}件</span>
+                        </div>
+                      )
+                    })}
+                </div>
+              </div>
+
               <Button onClick={handleDownload} size="lg" className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white">
                 <Download />
                 調整済みファイルをダウンロード

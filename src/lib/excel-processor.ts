@@ -5,7 +5,7 @@ import {
   FILTER_VALUE,
   SHEET_NAME,
 } from './types'
-import { toSafeNumber, adjustBid } from './bid-adjuster'
+import { toSafeNumber, adjustBid, getDelta } from './bid-adjuster'
 
 /** 処理結果 */
 export interface ProcessResult {
@@ -15,6 +15,8 @@ export interface ProcessResult {
   processedRows: number
   /** 元の行数（ヘッダー除く） */
   totalRows: number
+  /** デルタ値ごとの件数 (例: { "3": 10, "0": 5, "-5": 8 }) */
+  deltaCounts: Record<string, number>
 }
 
 /** 列インデックスのマッピング */
@@ -107,6 +109,7 @@ export function processExcel(
   // ヘッダー行を残し、データ行をフィルター
   const totalRows = data.length - 1
   const filteredData: unknown[][] = [headerRow]
+  const deltaCounts: Record<string, number> = {}
 
   for (let i = 1; i < data.length; i++) {
     const row = data[i]
@@ -119,6 +122,11 @@ export function processExcel(
     const roas = toSafeNumber(row[cols.roas])
     const clicks = toSafeNumber(row[cols.clicks])
     const currentBid = toSafeNumber(row[cols.bid])
+
+    // デルタ値をカウント
+    const delta = getDelta(roas, clicks, params)
+    const deltaKey = delta >= 0 ? `+${delta}` : `${delta}`
+    deltaCounts[deltaKey] = (deltaCounts[deltaKey] || 0) + 1
 
     const newBid = adjustBid(currentBid, roas, clicks, params)
     row[cols.bid] = newBid
@@ -152,5 +160,6 @@ export function processExcel(
     outputBuffer,
     processedRows,
     totalRows,
+    deltaCounts,
   }
 }
