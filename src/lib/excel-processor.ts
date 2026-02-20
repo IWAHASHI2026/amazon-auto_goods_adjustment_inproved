@@ -2,7 +2,7 @@ import * as XLSX from 'xlsx'
 import {
   type AdjustmentParams,
   COLUMN_HEADERS,
-  FILTER_VALUE,
+  FILTER_VALUES,
   SHEET_NAME,
 } from './types'
 import { toSafeNumber, adjustBid, getDelta } from './bid-adjuster'
@@ -63,7 +63,7 @@ function findColumnIndices(headerRow: unknown[]): ColumnIndices {
  * アップロードされたExcelファイルを処理する。
  * 1. シート「スポンサープロダクト広告キャンペーン」を取得
  * 2. ヘッダー名で列を特定
- * 3. 「商品ターゲティング」行のみフィルター
+ * 3. 「商品ターゲティング」「キーワード」行のみフィルター
  * 4. 入札額を調整
  * 5. 「操作」列に "update" を代入
  * 6. 調整済みxlsxを返す
@@ -116,7 +116,7 @@ export function processExcel(
     if (!row) continue
 
     const entityValue = String(row[cols.entity] ?? '').trim()
-    if (entityValue !== FILTER_VALUE) continue
+    if (!FILTER_VALUES.includes(entityValue as typeof FILTER_VALUES[number])) continue
 
     // 入札額を調整
     const roas = toSafeNumber(row[cols.roas])
@@ -141,7 +141,7 @@ export function processExcel(
 
   if (processedRows === 0) {
     throw new Error(
-      `「${FILTER_VALUE}」に該当する行が見つかりませんでした。ファイルの内容を確認してください。`,
+      `「${FILTER_VALUES.join('」「')}」に該当する行が見つかりませんでした。ファイルの内容を確認してください。`,
     )
   }
 

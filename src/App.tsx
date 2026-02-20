@@ -151,7 +151,7 @@ function App() {
       {/* ヘッダーバナー */}
       <div className="bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 px-4 py-8 shadow-lg">
         <div className="container mx-auto max-w-4xl">
-          <h1 className="text-2xl font-bold text-white">Amazon オート、商品ターゲティング 入札調整ツール</h1>
+          <h1 className="text-2xl font-bold text-white">Amazon オート、商品ターゲティング 入札調整ツール <span className="text-base font-normal text-white/80">vr.2</span></h1>
           <p className="text-sm text-white/70 mt-1">
             ※バルクファイル(7日間)をアップロードしてください。
           </p>
@@ -210,7 +210,7 @@ function App() {
                   <p className="font-medium text-lg text-emerald-900">{result.totalRows.toLocaleString()}</p>
                 </div>
                 <div>
-                  <p className="text-emerald-600/70">処理対象行数（商品ターゲティング）</p>
+                  <p className="text-emerald-600/70">処理対象行数（商品ターゲティング・キーワード）</p>
                   <p className="font-medium text-lg text-emerald-900">{result.processedRows.toLocaleString()}</p>
                 </div>
               </div>

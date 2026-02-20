@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import * as XLSX from 'xlsx'
 import { processExcel } from './excel-processor'
-import { DEFAULT_PARAMS, SHEET_NAME, COLUMN_HEADERS, FILTER_VALUE } from './types'
+import { DEFAULT_PARAMS, SHEET_NAME, COLUMN_HEADERS, FILTER_VALUES } from './types'
 
 /** テスト用のExcelバッファを生成するヘルパー */
 function createTestWorkbook(
@@ -48,29 +48,29 @@ describe('processExcel', () => {
     expect(() => processExcel(buf, DEFAULT_PARAMS)).toThrow('該当する行が見つかりません')
   })
 
-  it('商品ターゲティング行のみフィルターされる', () => {
+  it('商品ターゲティング・キーワード行のみフィルターされる', () => {
     const data = [
       headers,
-      ['SP', FILTER_VALUE, '', 'キャンペーン1', 18, 10, 0],
-      ['SP', 'キーワード', '', 'キャンペーン2', 20, 5, 3],
-      ['SP', FILTER_VALUE, '', 'キャンペーン3', 48, 50, 0],
+      ['SP', FILTER_VALUES[0], '', 'キャンペーン1', 18, 10, 0],
+      ['SP', FILTER_VALUES[1], '', 'キャンペーン2', 20, 5, 3],
+      ['SP', FILTER_VALUES[0], '', 'キャンペーン3', 48, 50, 0],
       ['SP', 'プロダクト広告', '', 'キャンペーン4', 30, 20, 5],
     ]
     const buf = createTestWorkbook(SHEET_NAME, data)
     const result = processExcel(buf, DEFAULT_PARAMS)
 
-    expect(result.processedRows).toBe(2)
+    expect(result.processedRows).toBe(3)
     expect(result.totalRows).toBe(4)
 
     const output = readOutputSheet(result.outputBuffer)
-    // ヘッダー + 2行 = 3行
-    expect(output.length).toBe(3)
+    // ヘッダー + 3行 = 4行
+    expect(output.length).toBe(4)
   })
 
   it('入札額がルールに従って調整される（ルール1: ROAS=0, clicks=10）', () => {
     const data = [
       headers,
-      ['SP', FILTER_VALUE, '', 'キャンペーン1', 18, 10, 0],
+      ['SP', FILTER_VALUES[0], '', 'キャンペーン1', 18, 10, 0],
     ]
     const buf = createTestWorkbook(SHEET_NAME, data)
     const result = processExcel(buf, DEFAULT_PARAMS)
@@ -83,7 +83,7 @@ describe('processExcel', () => {
   it('入札額がルールに従って調整される（ルール2: ROAS=0, clicks=50）', () => {
     const data = [
       headers,
-      ['SP', FILTER_VALUE, '', 'キャンペーン1', 48, 50, 0],
+      ['SP', FILTER_VALUES[0], '', 'キャンペーン1', 48, 50, 0],
     ]
     const buf = createTestWorkbook(SHEET_NAME, data)
     const result = processExcel(buf, DEFAULT_PARAMS)
@@ -96,7 +96,7 @@ describe('processExcel', () => {
   it('入札額がルールに従って調整される（ルール5: ROAS=10）', () => {
     const data = [
       headers,
-      ['SP', FILTER_VALUE, '', 'キャンペーン1', 50, 30, 10],
+      ['SP', FILTER_VALUES[0], '', 'キャンペーン1', 50, 30, 10],
     ]
     const buf = createTestWorkbook(SHEET_NAME, data)
     const result = processExcel(buf, DEFAULT_PARAMS)
@@ -109,7 +109,7 @@ describe('processExcel', () => {
   it('操作列にupdateが入る', () => {
     const data = [
       headers,
-      ['SP', FILTER_VALUE, '', 'キャンペーン1', 18, 10, 0],
+      ['SP', FILTER_VALUES[0], '', 'キャンペーン1', 18, 10, 0],
     ]
     const buf = createTestWorkbook(SHEET_NAME, data)
     const result = processExcel(buf, DEFAULT_PARAMS)
@@ -122,7 +122,7 @@ describe('processExcel', () => {
   it('入札額が下限（1）でクランプされる', () => {
     const data = [
       headers,
-      ['SP', FILTER_VALUE, '', 'キャンペーン1', 2, 50, 0],
+      ['SP', FILTER_VALUES[0], '', 'キャンペーン1', 2, 50, 0],
     ]
     const buf = createTestWorkbook(SHEET_NAME, data)
     const result = processExcel(buf, DEFAULT_PARAMS)
@@ -135,7 +135,7 @@ describe('processExcel', () => {
   it('入札額が上限（200）でクランプされる', () => {
     const data = [
       headers,
-      ['SP', FILTER_VALUE, '', 'キャンペーン1', 199, 0, 10],
+      ['SP', FILTER_VALUES[0], '', 'キャンペーン1', 199, 0, 10],
     ]
     const buf = createTestWorkbook(SHEET_NAME, data)
     const result = processExcel(buf, DEFAULT_PARAMS)
@@ -148,7 +148,7 @@ describe('processExcel', () => {
   it('空欄・"--" は0扱いされる', () => {
     const data = [
       headers,
-      ['SP', FILTER_VALUE, '', 'キャンペーン1', 18, '--', ''],
+      ['SP', FILTER_VALUES[0], '', 'キャンペーン1', 18, '--', ''],
     ]
     const buf = createTestWorkbook(SHEET_NAME, data)
     const result = processExcel(buf, DEFAULT_PARAMS)
@@ -166,7 +166,7 @@ describe('processExcel', () => {
     }
     const data = [
       headers,
-      ['SP', FILTER_VALUE, '', 'キャンペーン1', 20, 10, 0],
+      ['SP', FILTER_VALUES[0], '', 'キャンペーン1', 20, 10, 0],
     ]
     const buf = createTestWorkbook(SHEET_NAME, data)
     const result = processExcel(buf, customParams)

@@ -44,8 +44,8 @@ export const COLUMN_HEADERS = {
   operation: '操作',
 } as const
 
-/** フィルター値（完全一致） */
-export const FILTER_VALUE = '商品ターゲティング' as const
+/** フィルター値（完全一致、いずれかに該当する行を残す） */
+export const FILTER_VALUES = ['商品ターゲティング', 'キーワード'] as const
 
 /** 対象シート名 */
 export const SHEET_NAME = 'スポンサープロダクト広告キャンペーン' as const
